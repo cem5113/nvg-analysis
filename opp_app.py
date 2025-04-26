@@ -62,27 +62,26 @@ if uploaded_files:
     for alt in alternatives:
         merged_ratings[alt] = {}
         for crit in criteria:
-        triples = []
-        for ratings in alternative_ratings:
-            value = ratings.loc[alt, crit]
-            if isinstance(value, tuple):
-                triples.append(value)
-            else:
-                try:
-                    triples.append(ast.literal_eval(str(value)))
-                except (ValueError, SyntaxError):
-                    # Eğer tuple gibi çözümlenemiyorsa linguistic_scale içinden bul
-                    from collections import defaultdict
-                    linguistic_scale = defaultdict(lambda: (0,0,1), {
-                        "Very Poor (VP)": (0, 0, 1),
-                        "Poor (P)": (0, 1, 3),
-                        "Medium Poor (MP)": (1, 3, 5),
-                        "Fair (F)": (3, 5, 7),
-                        "Medium Good (MG)": (5, 7, 9),
-                        "Good (G)": (7, 9, 10),
-                        "Very Good (VG)": (9, 10, 10)
-                    })
-                    triples.append(linguistic_scale[str(value)])
+            triples = []
+            for ratings in alternative_ratings:
+                value = ratings.loc[alt, crit]
+                if isinstance(value, tuple):
+                    triples.append(value)
+                else:
+                    try:
+                        triples.append(ast.literal_eval(str(value)))
+                    except (ValueError, SyntaxError):
+                        from collections import defaultdict
+                        linguistic_scale = defaultdict(lambda: (0,0,1), {
+                            "Very Poor (VP)": (0, 0, 1),
+                            "Poor (P)": (0, 1, 3),
+                            "Medium Poor (MP)": (1, 3, 5),
+                            "Fair (F)": (3, 5, 7),
+                            "Medium Good (MG)": (5, 7, 9),
+                            "Good (G)": (7, 9, 10),
+                            "Very Good (VG)": (9, 10, 10)
+                        })
+                        triples.append(linguistic_scale[str(value)])
             avg_triple = tuple(np.mean(triples, axis=0))
             merged_ratings[alt][crit] = avg_triple
 
