@@ -102,7 +102,7 @@ if uploaded_files:
     for alt in merged_ratings:
         cleaned_data[alt] = {}
         for crit in merged_ratings[alt]:
-            cleaned_data[alt][crit] = str(tuple(float(x) for x in merged_ratings[alt][crit]))
+            cleaned_data[alt][crit] = tuple(float(x) for x in merged_ratings[alt][crit])
     
     df_merged = pd.DataFrame(cleaned_data).T
     st.dataframe(df_merged)
@@ -114,6 +114,7 @@ if uploaded_files:
     normalized = {}
     for crit_idx in range(len(criteria)):
         crit_col = [df_merged.loc[alt, criteria[crit_idx]] for alt in alternatives]
+        crit_col = [ast.literal_eval(x) if isinstance(x, str) else x for x in crit_col]  # 💥 Stringleri tuple yap
         max_upper = max([x[2] for x in crit_col])
         normalized_col = []
         for x in crit_col:
