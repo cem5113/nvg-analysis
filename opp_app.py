@@ -97,7 +97,14 @@ if uploaded_files:
             avg_triple = tuple(np.mean(triples, axis=0))
             merged_ratings[alt][crit] = avg_triple
 
-    df_merged = pd.DataFrame(merged_ratings).T
+    # Convert all tuples to plain string format (0.0, 0.0, 1.0)
+    cleaned_data = {}
+    for alt in merged_ratings:
+        cleaned_data[alt] = {}
+        for crit in merged_ratings[alt]:
+            cleaned_data[alt][crit] = str(tuple(float(x) for x in merged_ratings[alt][crit]))
+    
+    df_merged = pd.DataFrame(cleaned_data).T
     st.dataframe(df_merged)
 
     # === Step 3: Fuzzy TOPSIS Calculation ===
@@ -138,6 +145,20 @@ if uploaded_files:
     df_results['Rank'] = df_results['Closeness Coefficient'].rank(ascending=False, method='min')
     df_results['Rank'] = df_results['Rank'].fillna(0).astype(int)
 
+    nvg_attributes = {
+        "NVG A": {"Weight (g)": 592, "Phosphor Screen": "Green"},
+        "NVG B": {"Weight (g)": 506, "Phosphor Screen": "Green"},
+        "NVG C": {"Weight (g)": 424, "Phosphor Screen": "White"},
+        "NVG D": {"Weight (g)": 525, "Phosphor Screen": "Green"},
+        "NVG E": {"Weight (g)": 650, "Phosphor Screen": "White"},
+        "NVG F": {"Weight (g)": 560, "Phosphor Screen": "Green"},
+        "NVG G": {"Weight (g)": 600, "Phosphor Screen": "White"}
+    }
+    
+    # Add Weight (g) and Phosphor Screen columns
+    df_results["Weight (g)"] = df_results["Alternative"].map(lambda x: nvg_attributes[x]["Weight (g)"])
+    df_results["Phosphor Screen"] = df_results["Alternative"].map(lambda x: nvg_attributes[x]["Phosphor Screen"])
+    
     st.subheader("Final Ranking")
     st.dataframe(df_results)
 
