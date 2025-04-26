@@ -117,11 +117,24 @@ if uploaded_files:
         max_upper = max([x[2] for x in crit_col])
         normalized_col = []
         for x in crit_col:
-            if isinstance(x, str):
-                x_tuple = ast.literal_eval(x)
-            else:
-                x_tuple = x
-            normalized_col.append((x_tuple[0]/max_upper, x_tuple[1]/max_upper, x_tuple[2]/max_upper))
+            try:
+                if isinstance(x, str):
+                    x_tuple = ast.literal_eval(x)
+                elif isinstance(x, (tuple, list)):
+                    x_tuple = x
+                else:
+                    x_tuple = (0.0, 0.0, 0.0)  # Eğer garip bir şeyse default ver
+                
+                # Şimdi normalle
+                normalized_col.append((
+                    float(x_tuple[0])/max_upper,
+                    float(x_tuple[1])/max_upper,
+                    float(x_tuple[2])/max_upper
+                ))
+            except Exception as e:
+                # Hatalı veri olursa güvenli default
+                normalized_col.append((0.0, 0.0, 0.0))
+    
         for i, alt in enumerate(alternatives):
             if alt not in normalized:
                 normalized[alt] = []
