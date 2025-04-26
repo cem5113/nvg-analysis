@@ -66,10 +66,13 @@ if uploaded_files:
             for ratings in alternative_ratings:
                 value = ratings.loc[alt, crit]
                 if isinstance(value, tuple):
-                    triples.append(value)
+                    triples.append(tuple(float(x) for x in value))
                 else:
                     try:
-                        triples.append(ast.literal_eval(str(value)))
+                        # value örnek: (np.float64(0.0), np.float64(0.0), np.float64(1.0))
+                        value_str = str(value).replace("np.float64(", "").replace(")", "")
+                        numbers = tuple(float(x.strip()) for x in value_str.split(',') if x.strip() != '')
+                        triples.append(numbers)
                     except (ValueError, SyntaxError):
                         from collections import defaultdict
                         linguistic_scale = defaultdict(lambda: (0,0,1), {
