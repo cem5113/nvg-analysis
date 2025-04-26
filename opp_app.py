@@ -123,7 +123,8 @@ if uploaded_files:
 
     results.sort(key=lambda x: x[3], reverse=True)
     df_results = pd.DataFrame(results, columns=["Alternative", "D+ (FPIS)", "D- (FNIS)", "Closeness Coefficient"])
-    df_results['Rank'] = df_results['Closeness Coefficient'].rank(ascending=False, method='min').astype(int)
+    df_results['Rank'] = df_results['Closeness Coefficient'].rank(ascending=False, method='min')
+    df_results['Rank'] = df_results['Rank'].fillna(0).astype(int)
 
     st.subheader("Final Ranking")
     st.dataframe(df_results)
