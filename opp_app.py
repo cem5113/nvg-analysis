@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import io
+import ast
 
 st.title("Operator Panel - NVG Evaluation Consolidation")
 
@@ -61,7 +62,7 @@ if uploaded_files:
     for alt in alternatives:
         merged_ratings[alt] = {}
         for crit in criteria:
-            triples = [eval(str(ratings.loc[alt, crit])) for ratings in alternative_ratings]
+            triples = [ast.literal_eval(str(ratings.loc[alt, crit])) for ratings in alternative_ratings]
             avg_triple = tuple(np.mean(triples, axis=0))
             merged_ratings[alt][crit] = avg_triple
 
