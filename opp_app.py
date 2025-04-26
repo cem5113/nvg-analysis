@@ -115,7 +115,13 @@ if uploaded_files:
     for crit_idx in range(len(criteria)):
         crit_col = [df_merged.loc[alt, criteria[crit_idx]] for alt in alternatives]
         max_upper = max([x[2] for x in crit_col])
-        normalized_col = [(x[0]/max_upper, x[1]/max_upper, x[2]/max_upper) for x in crit_col]
+        normalized_col = []
+        for x in crit_col:
+            if isinstance(x, str):
+                x_tuple = ast.literal_eval(x)
+            else:
+                x_tuple = x
+            normalized_col.append((x_tuple[0]/max_upper, x_tuple[1]/max_upper, x_tuple[2]/max_upper))
         for i, alt in enumerate(alternatives):
             if alt not in normalized:
                 normalized[alt] = []
