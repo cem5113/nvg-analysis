@@ -52,6 +52,15 @@ if uploaded_files:
         'Weight': ahp_weights
     })
 
+    # Calculate CR (Consistency Ratio)
+    weighted_sum = np.dot(avg_pairwise, ahp_weights)
+    lambda_max = np.sum(weighted_sum / ahp_weights) / len(criteria)
+    CI = (lambda_max - len(criteria)) / (len(criteria) - 1)
+    
+    RI_dict = {1: 0.00, 2: 0.00, 3: 0.58, 4: 0.90, 5: 1.12, 6: 1.24, 7: 1.32, 8: 1.41, 9: 1.45, 10: 1.49}
+    RI = RI_dict[len(criteria)]
+    CR = CI / RI
+    
     st.subheader("Aggregated AHP Criteria Weights")
     st.dataframe(weights_df.style.format({'Weight': "{:.4f}"}))
 
