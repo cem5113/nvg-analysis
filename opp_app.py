@@ -135,15 +135,49 @@ if uploaded_files:
     # === Step 4: Download Final Results ===
     output = io.BytesIO()
     with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+        # Save Criteria Weights
         weights_df.to_excel(writer, sheet_name='Criteria Weights', index=False)
+        
+        # Save Aggregated Ratings
         df_merged.to_excel(writer, sheet_name='Aggregated Ratings')
+        
+        # Save Fuzzy TOPSIS Results
         df_results.to_excel(writer, sheet_name='Fuzzy TOPSIS Results', index=False)
-
+        
+        # Save Consistency Ratio separately
+        cr_df = pd.DataFrame({
+            'Consistency Ratio (CR)': [CR]
+        })
+        cr_df.to_excel(writer, sheet_name='Consistency Ratio', index=False)
+        
+        # Apply Heatmap formatting for Fuzzy TOPSIS Results
+        workbook = writer.book
+        worksheet = writer.sheets['Fuzzy TOPSIS Results']
+    
+        # Heatmap for Rank column (E2:E100)
+        rank_format = {
+            'type': '3_color_scale',
+            'min_color': "#63BE7B",   # Green
+            'mid_color': "#FFEB84",   # Yellow
+            'max_color': "#F8696B",   # Red
+        }
+        worksheet.conditional_format('E2:E100', rank_format)
+    
+        # Heatmap for Weight (g) column (F2:F100)
+        weight_format = {
+            'type': '3_color_scale',
+            'min_color': "#63BE7B",
+            'mid_color': "#FFEB84",
+            'max_color': "#F8696B",
+        }
+        worksheet.conditional_format('F2:F100', weight_format)
+    
     output.seek(0)
-
+    
     st.download_button(
         label="📥 Download Final Report",
         data=output,
         file_name="nvg_final_report.xlsx",
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
+
