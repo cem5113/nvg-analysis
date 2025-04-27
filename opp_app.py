@@ -84,16 +84,24 @@ if uploaded_files:
                         triples.append(numbers)
                     except (ValueError, SyntaxError):
                         from collections import defaultdict
-                        linguistic_scale = defaultdict(lambda: (0,0,1), {
-                            "Very Poor (VP)": (0, 0, 1),
-                            "Poor (P)": (0, 1, 3),
-                            "Medium Poor (MP)": (1, 3, 5),
-                            "Fair (F)": (3, 5, 7),
-                            "Medium Good (MG)": (5, 7, 9),
-                            "Good (G)": (7, 9, 10),
-                            "Very Good (VG)": (9, 10, 10)
-                        })
-                        triples.append(linguistic_scale[str(value)])
+                        val = str(value)
+                        
+                        if "Very Poor" in val:
+                            triples.append((0, 0, 1))
+                        elif "Poor" in val and not "Very" in val:
+                            triples.append((0, 1, 3))
+                        elif "Medium Poor" in val:
+                            triples.append((1, 3, 5))
+                        elif "Fair" in val:
+                            triples.append((3, 5, 7))
+                        elif "Medium Good" in val:
+                            triples.append((5, 7, 9))
+                        elif "Good" in val and not "Very" in val:
+                            triples.append((7, 9, 10))
+                        elif "Very Good" in val:
+                            triples.append((9, 10, 10))
+                        else:
+                            triples.append((0, 0, 1))  
             avg_triple = tuple(np.mean(triples, axis=0))
             merged_ratings[alt][crit] = avg_triple
 
