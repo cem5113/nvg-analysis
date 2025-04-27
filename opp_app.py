@@ -141,7 +141,7 @@ if uploaded_files:
     normalized = {}
     for crit_idx in range(len(criteria)):
         crit_col = [df_merged.loc[alt, criteria[crit_idx]] for alt in alternatives]
-        crit_col = [ast.literal_eval(x) if isinstance(x, str) else x for x in crit_col]  # 💥 Stringleri tuple yap
+        crit_col = [ast.literal_eval(x) if isinstance(x, str) else x for x in crit_col]  
         max_upper = max([x[2] for x in crit_col])
         normalized_col = []
         for x in crit_col:
@@ -151,7 +151,7 @@ if uploaded_files:
                 elif isinstance(x, (tuple, list)):
                     x_tuple = x
                 else:
-                    x_tuple = (0.0, 0.0, 0.0)  # Eğer garip bir şeyse default ver
+                    x_tuple = (0.0, 0.0, 0.0) 
                 
                 # Şimdi normalle
                 normalized_col.append((
