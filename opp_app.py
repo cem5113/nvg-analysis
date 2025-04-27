@@ -43,9 +43,46 @@ if uploaded_files:
     # Aggregate Pairwise Matrices
     avg_pairwise = np.mean(pairwise_matrices, axis=0)
 
-    st.subheader("Aggregated Pairwise Comparison Matrix")
+    # === Show Aggregated Pairwise Comparison Matrix (Crisp) ===
+    st.subheader("Aggregated Pairwise Comparison Matrix (Crisp Values)")
     df_avg_pairwise = pd.DataFrame(avg_pairwise, index=criteria, columns=criteria)
     st.dataframe(df_avg_pairwise.style.format("{:.3f}"))
+    
+    # === Fuzzy Saaty Scale Mapping Function ===
+    def fuzzy_scale(value):
+        mapping = {
+            1: (1, 1, 1),
+            2: (1, 2, 3),
+            3: (2, 3, 4),
+            4: (3, 4, 5),
+            5: (4, 5, 6),
+            6: (5, 6, 7),
+            7: (6, 7, 8),
+            8: (7, 8, 9),
+            9: (8, 9, 9),
+            1/2: (0.333, 0.5, 1),
+            1/3: (0.25, 0.333, 0.5),
+            1/4: (0.2, 0.25, 0.333),
+            1/5: (0.167, 0.2, 0.25),
+            1/6: (0.143, 0.167, 0.2),
+            1/7: (0.125, 0.143, 0.167),
+            1/8: (0.111, 0.125, 0.143),
+            1/9: (0.111, 0.111, 0.125)
+        }
+        closest = min(mapping.keys(), key=lambda x: abs(x - value))
+        return mapping[closest]
+    
+    # === Convert Crisp Matrix to Fuzzy Matrix ===
+    fuzzy_pairwise = np.empty(avg_pairwise.shape, dtype=object)
+    
+    for i in range(avg_pairwise.shape[0]):
+        for j in range(avg_pairwise.shape[1]):
+            fuzzy_pairwise[i, j] = fuzzy_scale(avg_pairwise[i, j])
+    
+    # === Show Fuzzy Aggregated Pairwise Matrix ===
+    st.subheader("Fuzzy Aggregated Pairwise Comparison Matrix (Triangular Numbers)")
+    df_fuzzy_pairwise = pd.DataFrame(fuzzy_pairwise, index=criteria, columns=criteria)
+    st.dataframe(df_fuzzy_pairwise)
         
     # AHP Weights
     geometric_means = np.prod(avg_pairwise, axis=1) ** (1/avg_pairwise.shape[0])
@@ -218,7 +255,13 @@ if uploaded_files:
     with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
         # Save Aggregated Pairwise Matrix to Excel
         df_avg_pairwise.to_excel(writer, sheet_name='Aggregated Pairwise Matrix')
-        
+
+        # Save Aggregated Crisp Pairwise Matrix
+        df_avg_pairwise.to_excel(writer, sheet_name='Aggregated Crisp Pairwise Matrix')
+    
+        # Save Fuzzy Aggregated Pairwise Matrix
+        df_fuzzy_pairwise.to_excel(writer, sheet_name='Aggregated Fuzzy Pairwise Matrix')
+
         # Save Criteria Weights
         weights_df.to_excel(writer, sheet_name='Criteria Weights', index=False)
         
