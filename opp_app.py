@@ -129,7 +129,7 @@ if uploaded_files:
                 weighted_triple = tuple(round(float(x) * weight, 3) for x in triple)
             else:
                 weighted_triple = round(triple * weight, 3)
-            weighted_fuzzy[alt][crit] = weighted_triple
+            weighted_fuzzy[alt][crit] = f"({weighted_triple[0]}, {weighted_triple[1]}, {weighted_triple[2]})"
     
     df_weighted_fuzzy = pd.DataFrame(weighted_fuzzy).T
     st.dataframe(df_weighted_fuzzy)
