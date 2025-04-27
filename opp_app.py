@@ -102,7 +102,7 @@ if uploaded_files:
                             triples.append((1.0, 1.0, 1.0))
                         else:
                             triples.append((0.0, 0.0, 0.2))  
-            avg_triple = tuple(np.mean(triples, axis=0))
+            avg_triple = tuple(round(x, 1) for x in np.mean(triples, axis=0))
             merged_ratings[alt][crit] = avg_triple
 
     # Convert all tuples to plain string format (0.0, 0.0, 1.0)
@@ -115,7 +115,26 @@ if uploaded_files:
     df_merged = pd.DataFrame(cleaned_data).T
     st.dataframe(df_merged)
 
-    # === Step 3: Fuzzy TOPSIS Calculation ===
+    # === Step 3: Weighted Fuzzy Decision Matrix ===
+    st.subheader("Weighted Fuzzy Decision Matrix")
+    
+    weighted_fuzzy = {}
+    
+    for alt in alternatives:
+        weighted_fuzzy[alt] = {}
+        for idx, crit in enumerate(criteria):
+            triple = df_merged.loc[alt, crit]
+            weight = ahp_weights[idx]
+            if isinstance(triple, tuple) or isinstance(triple, list):
+                weighted_triple = tuple(round(x * weight, 3) for x in triple)
+            else:
+                weighted_triple = round(triple * weight, 3)
+            weighted_fuzzy[alt][crit] = weighted_triple
+    
+    df_weighted_fuzzy = pd.DataFrame(weighted_fuzzy).T
+    st.dataframe(df_weighted_fuzzy)
+
+    # === Step 4: Fuzzy TOPSIS Calculation ===
     st.header("Step 3: Fuzzy TOPSIS Results")
 
     # Normalize
@@ -190,7 +209,7 @@ if uploaded_files:
     st.subheader("Final Ranking")
     st.dataframe(df_results)
 
-    # === Step 4: Download Final Results ===
+    # === Step 5: Download Final Results ===
     output = io.BytesIO()
     with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
         # Save Criteria Weights
@@ -198,6 +217,9 @@ if uploaded_files:
         
         # Save Aggregated Ratings
         df_merged.to_excel(writer, sheet_name='Aggregated Ratings')
+        
+        # Save Weighted Fuzzy Ratings
+        df_weighted_fuzzy.to_excel(writer, sheet_name='Weighted Fuzzy Ratings')
         
         # Save Fuzzy TOPSIS Results
         df_results.to_excel(writer, sheet_name='Fuzzy TOPSIS Results', index=False)
