@@ -254,13 +254,13 @@ if uploaded_files:
     output = io.BytesIO()
     with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
         # Save Aggregated Pairwise Matrix to Excel
-        df_avg_pairwise.to_excel(writer, sheet_name='Aggregated Pairwise Matrix')
+        df_avg_pairwise.to_excel(writer, sheet_name='Agg Pairwise Matrix')
 
         # Save Aggregated Crisp Pairwise Matrix
-        df_avg_pairwise.to_excel(writer, sheet_name='Aggregated Crisp Pairwise Matrix')
+        df_avg_pairwise.to_excel(writer, sheet_name='Agg Crisp Pairwise Matrix')
     
         # Save Fuzzy Aggregated Pairwise Matrix
-        df_fuzzy_pairwise.to_excel(writer, sheet_name='Aggregated Fuzzy Pairwise Matrix')
+        df_fuzzy_pairwise.to_excel(writer, sheet_name='Agg Fuzzy Pairwise Matrix')
 
         # Save Criteria Weights
         weights_df.to_excel(writer, sheet_name='Criteria Weights', index=False)
