@@ -87,21 +87,21 @@ if uploaded_files:
                         val = str(value)
                         
                         if "Very Poor" in val:
-                            triples.append((0, 0, 1))
+                            triples.append((0.0, 0.0, 0.2))
                         elif "Poor" in val and not "Very" in val:
-                            triples.append((0, 1, 3))
+                            triples.append((0.0, 0.2, 0.4))
                         elif "Medium Poor" in val:
-                            triples.append((1, 3, 5))
+                            triples.append((0.2, 0.4, 0.6))
                         elif "Fair" in val:
-                            triples.append((3, 5, 7))
+                            triples.append((0.4, 0.6, 0.8))
                         elif "Medium Good" in val:
-                            triples.append((5, 7, 9))
+                            triples.append((0.6, 0.8, 1.0))
                         elif "Good" in val and not "Very" in val:
-                            triples.append((7, 9, 10))
+                            triples.append((0.8, 1.0, 1.0))
                         elif "Very Good" in val:
-                            triples.append((9, 10, 10))
+                            triples.append((1.0, 1.0, 1.0))
                         else:
-                            triples.append((0, 0, 1))  
+                            triples.append((0.0, 0.0, 0.2))  
             avg_triple = tuple(np.mean(triples, axis=0))
             merged_ratings[alt][crit] = avg_triple
 
