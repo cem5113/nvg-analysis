@@ -43,6 +43,10 @@ if uploaded_files:
     # Aggregate Pairwise Matrices
     avg_pairwise = np.mean(pairwise_matrices, axis=0)
 
+    st.subheader("Aggregated Pairwise Comparison Matrix")
+    df_avg_pairwise = pd.DataFrame(avg_pairwise, index=criteria, columns=criteria)
+    st.dataframe(df_avg_pairwise.style.format("{:.3f}"))
+        
     # AHP Weights
     geometric_means = np.prod(avg_pairwise, axis=1) ** (1/avg_pairwise.shape[0])
     ahp_weights = geometric_means / np.sum(geometric_means)
@@ -212,6 +216,9 @@ if uploaded_files:
     # === Step 5: Download Final Results ===
     output = io.BytesIO()
     with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+        # Save Aggregated Pairwise Matrix to Excel
+        df_avg_pairwise.to_excel(writer, sheet_name='Aggregated Pairwise Matrix')
+        
         # Save Criteria Weights
         weights_df.to_excel(writer, sheet_name='Criteria Weights', index=False)
         
