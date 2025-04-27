@@ -126,7 +126,7 @@ if uploaded_files:
             triple = df_merged.loc[alt, crit]
             weight = ahp_weights[idx]
             if isinstance(triple, tuple) or isinstance(triple, list):
-                weighted_triple = tuple(round(x * weight, 3) for x in triple)
+                weighted_triple = tuple(round(float(x) * weight, 3) for x in triple)
             else:
                 weighted_triple = round(triple * weight, 3)
             weighted_fuzzy[alt][crit] = weighted_triple
