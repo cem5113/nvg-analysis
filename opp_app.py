@@ -224,11 +224,12 @@ if uploaded_files:
         # Save Fuzzy TOPSIS Results
         df_results.to_excel(writer, sheet_name='Fuzzy TOPSIS Results', index=False)
         
-        # Save Consistency Ratio separately
-        cr_df = pd.DataFrame({
+        # Save Consistency Indicator and Consistency Ratio together
+        consistency_df = pd.DataFrame({
+            'Consistency Indicator (CI)': [CI],
             'Consistency Ratio (CR)': [CR]
         })
-        cr_df.to_excel(writer, sheet_name='Consistency Ratio', index=False)
+        consistency_df.to_excel(writer, sheet_name='Consistency', index=False)
         
         # Apply Heatmap formatting for Fuzzy TOPSIS Results
         workbook = writer.book
